@@ -69,7 +69,5 @@ class VigenereCipheringMachine {
 module.exports = {
   VigenereCipheringMachine,
 };
-
-const mashine = new VigenereCipheringMachine(true)
-console.log(mashine)
-
+const directMachine = new VigenereCipheringMachine(true)
+directMachine.encrypt('attack at dawn!', 'alphonse')
