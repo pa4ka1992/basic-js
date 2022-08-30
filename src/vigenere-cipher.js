@@ -19,55 +19,64 @@ const { NotImplementedError } = require("../extensions/index.js");
  * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
  *
  */
- const alphabeth = "0abcdefghijklmnopqrstuvwxyz".split("")
+const alphabeth = "abcdefghijklmnopqrstuvwxyz".split("");
 class VigenereCipheringMachine {
-  constructor(bool) {
+  constructor(bool = true) {
     this.direction = bool;
   }
-  encrypt(phrase, key) {
-    if (!phrase && !key) {
+  mashine(phrase, key, decrypt = undefined) {
+    if (!phrase || !key) {
       throw new Error("Incorrect arguments!");
     }
-    const phraseArray = phrase.split("");
+    const phraseArray = phrase.toLowerCase().split("");
     const compareKeyArray = key
       .repeat(Math.ceil(phrase.length / key.length))
+      .toLowerCase()
       .split("");
     const cipheredPhrase = [];
+    let keyIndexSwitcher = 0;
     for (let i = 0; i < phraseArray.length; i++) {
       if (!phraseArray[i].match(/[a-z]/i)) {
-        cipheredPhrase.push(phraseArray[i])
-        continue
+        cipheredPhrase.push(phraseArray[i]);
+        continue;
       }
       const cipherLettNumber = alphabeth.reduce(
         (cipheredLettNumber, lettAlphabeth, indexAlphabeth) => {
           if (phraseArray[i] == lettAlphabeth) {
-            return (cipheredLettNumber += indexAlphabeth);
+            cipheredLettNumber += indexAlphabeth;
           }
-          if (compareKeyArray[i] == lettAlphabeth) {
-            return (cipheredLettNumber += indexAlphabeth);
+          if (compareKeyArray[keyIndexSwitcher] == lettAlphabeth) {
+            decrypt
+              ? (cipheredLettNumber -= indexAlphabeth)
+              : (cipheredLettNumber += indexAlphabeth);
           }
           return cipheredLettNumber;
         },
         0
       );
-      cipheredPhrase.push(
-        alphabeth[
-          cipherLettNumber > 26 ? cipherLettNumber - 26 : cipherLettNumber
-        ]
-      );
+      let cipheredLettIndex =
+        cipherLettNumber > 25 ? cipherLettNumber - 26 : cipherLettNumber;
+      if (decrypt) {
+        cipheredLettIndex =
+          cipherLettNumber < 0 ? cipherLettNumber + 26 : cipherLettNumber;
+      }
+      cipheredPhrase.push(alphabeth[cipheredLettIndex]);
+      keyIndexSwitcher += 1;
     }
-    return cipheredPhrase.join('').toLocaleUpperCase()
+    if (this.direction) {
+      return cipheredPhrase.join("").toLocaleUpperCase();
+    } else {
+      return cipheredPhrase.reverse().join("").toLocaleUpperCase();
+    }
   }
-  decrypt(passw, key) {
-    if (!passw && !key) {
-      throw new Error("Incorrect arguments!");
-    }
-
+  encrypt(phrase, key) {
+    return this.mashine(phrase, key);
+  }
+  decrypt(phrase, key) {
+    return this.mashine(phrase, key, true);
   }
 }
 
 module.exports = {
   VigenereCipheringMachine,
 };
-const directMachine = new VigenereCipheringMachine(true)
-directMachine.encrypt('attack at dawn!', 'alphonse')
