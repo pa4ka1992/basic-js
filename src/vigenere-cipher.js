@@ -28,11 +28,10 @@ class VigenereCipheringMachine {
     if (!phrase || !key) {
       throw new Error("Incorrect arguments!");
     }
-    const phraseArray = phrase.toLowerCase().split("");
+    const phraseArray = phrase.toLowerCase();
     const compareKeyArray = key
       .repeat(Math.ceil(phrase.length / key.length))
-      .toLowerCase()
-      .split("");
+      .toLowerCase();
     const cipheredPhrase = [];
     let keyIndexSwitcher = 0;
     for (let i = 0; i < phraseArray.length; i++) {
